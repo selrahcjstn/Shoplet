@@ -1,4 +1,4 @@
-import { getToken } from './token'
+import { clearToken, getToken } from './token'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
@@ -27,6 +27,12 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   })
 
   if (!response.ok) {
+    // A rejected token means the session expired: sign out and go to the login page.
+    // (A failed login has no token yet, so it is not affected.)
+    if (response.status === 401 && token) {
+      clearToken()
+      window.location.assign('/login')
+    }
     const body = await response.json().catch(() => null)
     const message = body?.message ?? 'Something went wrong'
     throw new ApiError(response.status, Array.isArray(message) ? message : [message])

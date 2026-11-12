@@ -8,6 +8,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
   });
+  // Allow the frontend origin(s) to call the API. Comma-separated list in CORS_ORIGIN.
+  app.enableCors({
+    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:5173').split(','),
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
