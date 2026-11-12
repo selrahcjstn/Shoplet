@@ -284,7 +284,7 @@ export default function ProductsPage() {
               }
             />
           ) : (
-            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 min-[1500px]:grid-cols-4">
+            <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
               {visibleProducts.map((product) => (
                 <li key={product.id}>
                   <ProductTile

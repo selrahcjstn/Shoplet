@@ -1,4 +1,5 @@
 import { Eye, EyeOff, Pencil, Star, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 import { cn } from '../../../lib/cn'
 import { formatPrice } from '../../../lib/format'
 import type { Product } from '../types'
@@ -14,10 +15,14 @@ interface ProductTileProps {
   onDelete: () => void
 }
 
-const iconButton =
-  'rounded-md p-2 text-content-secondary transition-colors duration-150 hover:bg-surface-muted hover:text-content disabled:opacity-50'
+// Small round buttons over the photo. Shown on hover or keyboard focus; always shown on touch screens.
+const actionButton = cn(
+  'flex size-8 items-center justify-center rounded-full bg-surface/95 text-content-secondary',
+  'transition-colors duration-150 hover:bg-surface hover:text-content disabled:opacity-50',
+  'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
+)
 
-/** A product as the seller sees it: the photo, the key facts, and quick actions. */
+/** A compact product card: photo first, with the details and quick actions kept small. */
 export default function ProductTile({
   product,
   imageUrl,
@@ -27,71 +32,65 @@ export default function ProductTile({
   onToggleVisible,
   onDelete,
 }: ProductTileProps) {
+  // A broken photo link falls back to the letter tile instead of an empty box.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null)
+  const showImage = Boolean(imageUrl) && imageUrl !== failedUrl
+
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface">
-      <div className="relative aspect-square bg-surface-muted">
-        {imageUrl ? (
+    <article className="group relative overflow-hidden rounded-xl border border-border bg-surface transition-colors duration-150 hover:border-border-strong">
+      <div className="relative aspect-[4/3] bg-primary-light">
+        {showImage ? (
           <img
             src={imageUrl}
             alt=""
             loading="lazy"
-            className={cn('size-full object-cover', !product.isVisible && 'opacity-60')}
+            onError={() => setFailedUrl(imageUrl ?? null)}
+            className={cn('size-full object-cover', !product.isVisible && 'opacity-50 grayscale')}
           />
         ) : (
           <div
             aria-hidden
             className={cn(
-              'flex size-full items-center justify-center bg-primary-light text-6xl font-bold text-primary/40',
-              !product.isVisible && 'opacity-60',
+              'flex size-full items-center justify-center text-5xl font-bold text-primary/35',
+              !product.isVisible && 'opacity-50',
             )}
           >
             {product.name.charAt(0).toUpperCase()}
           </div>
         )}
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          {product.isFeatured ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-brand-ink">
-              <Star aria-hidden className="size-3.5" />
-              Featured
-            </span>
-          ) : (
-            <span />
-          )}
-          {!product.isVisible && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-ink/85 px-2.5 py-0.5 text-xs font-medium text-content-inverse">
-              <EyeOff aria-hidden className="size-3.5" />
-              Hidden
-            </span>
-          )}
-        </div>
-      </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        {categoryName && <p className="truncate text-xs font-medium text-content-secondary">{categoryName}</p>}
-        <h3 className="mt-0.5 truncate font-semibold text-content">{product.name}</h3>
-        <p className="mt-1 text-lg font-semibold text-primary-dark">{formatPrice(product.price)}</p>
-        <div className="mt-2">
-          <AvailabilityBadge availability={product.availability} />
-        </div>
-      </div>
+        {product.isFeatured && (
+          <span
+            title="Featured"
+            className="absolute left-2 top-2 flex size-7 items-center justify-center rounded-full bg-accent text-brand-ink"
+          >
+            <Star aria-hidden className="size-3.5 fill-current" />
+            <span className="sr-only">Featured</span>
+          </span>
+        )}
 
-      <div className="flex items-center justify-between gap-1 border-t border-border px-2 py-2">
-        <button
-          type="button"
-          onClick={onEdit}
-          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-content transition-colors duration-150 hover:bg-surface-muted"
+        <div
+          className={cn(
+            'absolute z-10 right-2 top-2 flex gap-1.5 transition-opacity duration-150',
+            'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100',
+          )}
         >
-          <Pencil aria-hidden className="size-4" />
-          Edit
-        </button>
-        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={onEdit}
+            aria-label={`Edit ${product.name}`}
+            title="Edit"
+            className={actionButton}
+          >
+            <Pencil aria-hidden className="size-4" />
+          </button>
           <button
             type="button"
             onClick={onToggleVisible}
             disabled={busy}
             aria-label={product.isVisible ? `Hide ${product.name}` : `Show ${product.name}`}
             title={product.isVisible ? 'Hide from customers' : 'Show to customers'}
-            className={iconButton}
+            className={actionButton}
           >
             {product.isVisible ? <Eye aria-hidden className="size-4" /> : <EyeOff aria-hidden className="size-4" />}
           </button>
@@ -101,11 +100,36 @@ export default function ProductTile({
             disabled={busy}
             aria-label={`Delete ${product.name}`}
             title="Delete"
-            className={cn(iconButton, 'hover:text-error')}
+            className={cn(actionButton, 'hover:text-error')}
           >
             <Trash2 aria-hidden className="size-4" />
           </button>
         </div>
+
+        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
+          <AvailabilityBadge availability={product.availability} />
+          {!product.isVisible && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-ink/85 px-2.5 py-0.5 text-xs font-medium text-content-inverse">
+              <EyeOff aria-hidden className="size-3.5" />
+              Hidden
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-start justify-between gap-3 px-3.5 py-3">
+        <div className="min-w-0">
+          {/* The name is the main click target: it stretches over the whole card and opens the editor. */}
+          <button
+            type="button"
+            onClick={onEdit}
+            className="block max-w-full truncate text-left text-sm font-semibold text-content after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {product.name}
+          </button>
+          <p className="truncate text-xs text-content-secondary">{categoryName ?? 'No category'}</p>
+        </div>
+        <p className="shrink-0 text-sm font-semibold text-primary-dark">{formatPrice(product.price)}</p>
       </div>
     </article>
   )
