@@ -73,9 +73,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                       cn(
                         'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150',
                         focus,
-                        isActive
-                          ? 'bg-white/10 text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-accent'
-                          : 'text-primary-light/75 hover:bg-white/5 hover:text-white',
+                        isActive ? 'bg-white/10 text-white' : 'text-primary-light/75 hover:bg-white/5 hover:text-white',
                       )
                     }
                   >

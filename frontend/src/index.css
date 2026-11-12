@@ -92,12 +92,202 @@
   animation-delay: var(--delay, 0ms);
 }
 
+
+/*
+  Build-up entrance for illustrations. Each piece reads its own delay from --d, so a picture can be
+  assembled in order: posts grow, the counter rises, the awning drops, goods pop, the sign swings.
+*/
+@keyframes build-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes build-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes build-wipe {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes build-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-34px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes build-rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes build-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes build-swing {
+  0% {
+    opacity: 0;
+    transform: rotate(-16deg);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(7deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes build-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes build-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes build-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Inside <Reveal>, animations wait at their first frame until the block scrolls into view */
+.reveal:not(.is-visible) .build,
+.reveal:not(.is-visible) .rise {
+  animation-play-state: paused;
+}
+
+/* Inside <Reveal>, animations wait at their first frame until the block scrolls into view */
+.reveal:not(.is-visible) .build,
+.reveal:not(.is-visible) .rise {
+  animation-play-state: paused;
+}
+
+.build {
+  animation-duration: 550ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: both;
+  animation-delay: var(--d, 0ms);
+  /* Lets SVG parts transform around their own box instead of the whole picture */
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.build-fade {
+  animation-name: build-fade;
+  animation-duration: 800ms;
+}
+
+.build-grow {
+  animation-name: build-grow;
+  animation-duration: 650ms;
+}
+
+.build-wipe {
+  animation-name: build-wipe;
+  transform-origin: left center;
+}
+
+.build-drop {
+  animation-name: build-drop;
+  transform-origin: center top;
+}
+
+.build-rise {
+  animation-name: build-rise;
+}
+
+.build-pop {
+  animation-name: build-pop;
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.build-swing {
+  animation-name: build-swing;
+  animation-duration: 1100ms;
+  animation-timing-function: ease-out;
+}
+
+.build-slide-left {
+  animation-name: build-slide-left;
+  animation-duration: 600ms;
+}
+
+.build-slide-right {
+  animation-name: build-slide-right;
+  animation-duration: 600ms;
+}
+
+.build-scale {
+  animation-name: build-scale;
+  animation-duration: 800ms;
+  transform-origin: center;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise {
+  .rise,
+  .build {
     animation: none;
   }
   html {
