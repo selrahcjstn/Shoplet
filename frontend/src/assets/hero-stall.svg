@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 440" fill="none">
+  <ellipse cx="280" cy="410" rx="236" ry="14" fill="#183B35" fill-opacity=".08"/>
+  <!-- posts -->
+  <rect x="72" y="110" width="10" height="300" rx="3" fill="#183B35"/>
+  <rect x="478" y="110" width="10" height="300" rx="3" fill="#183B35"/>
+  <!-- awning -->
+  <path d="M50 56h460l-16-34H66z" fill="#124F45"/>
+  <path d="M60.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#176B5B"/>
+  <path d="M115.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#F1F3EE"/>
+  <path d="M170.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#176B5B"/>
+  <path d="M225.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#F1F3EE"/>
+  <path d="M280.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#176B5B"/>
+  <path d="M335.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#F1F3EE"/>
+  <path d="M390.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#176B5B"/>
+  <path d="M445.0 56h55.0v62a27.50 27.50 0 0 1 -55.0 0z" fill="#F1F3EE"/>
+  
+  <!-- hanging sign -->
+  <path d="M236 118v22M324 118v22" stroke="#183B35" stroke-width="2"/>
+  <rect x="216" y="140" width="128" height="44" rx="6" fill="#FFF2D9" stroke="#E9A23B" stroke-width="2"/>
+  <text x="280" y="169" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="20" fill="#183B35" letter-spacing="1">Open today</text>
+  <!-- back shelf -->
+  <rect x="96" y="214" width="368" height="8" rx="2" fill="#183B35"/>
+  <!-- jars on shelf -->
+  <rect x="116" y="170" width="34" height="44" rx="5" fill="#FFFFFF" stroke="#D5DDD5" stroke-width="2"/>
+  <rect x="120" y="186" width="26" height="24" rx="3" fill="#E9A23B"/>
+  <rect x="158" y="180" width="30" height="34" rx="5" fill="#FFFFFF" stroke="#D5DDD5" stroke-width="2"/>
+  <rect x="162" y="194" width="22" height="16" rx="3" fill="#B94A45" fill-opacity=".85"/>
+  <rect x="396" y="176" width="32" height="38" rx="5" fill="#FFFFFF" stroke="#D5DDD5" stroke-width="2"/>
+  <rect x="400" y="190" width="24" height="20" rx="3" fill="#237A50" fill-opacity=".8"/>
+  <rect x="436" y="190" width="18" height="24" rx="4" fill="#176B5B"/>
+  <!-- counter -->
+  <rect x="88" y="300" width="384" height="110" rx="6" fill="#FFFFFF" stroke="#D5DDD5" stroke-width="2"/>
+  <rect x="88" y="290" width="384" height="22" rx="5" fill="#F1F3EE" stroke="#D5DDD5" stroke-width="2"/>
+  <path d="M120 330h320M120 356h320M120 382h320" stroke="#D5DDD5" stroke-width="2"/>
+  <!-- baskets on counter -->
+  <path d="M120 290l8-46h64l8 46z" fill="#E9A23B" fill-opacity=".9"/>
+  <path d="M130 266h54M126 280h62" stroke="#FFF2D9" stroke-width="3"/>
+  <circle cx="146" cy="236" r="11" fill="#B94A45"/>
+  <circle cx="168" cy="232" r="11" fill="#E9A23B"/>
+  <circle cx="186" cy="238" r="9" fill="#237A50"/>
+  <!-- tote bags -->
+  <rect x="262" y="246" width="56" height="44" rx="4" fill="#E8F2EC" stroke="#176B5B" stroke-width="2"/>
+  <path d="M276 246c0-16 28-16 28 0" stroke="#183B35" stroke-width="3" fill="none"/>
+  <rect x="326" y="256" width="48" height="34" rx="4" fill="#FFF2D9" stroke="#E9A23B" stroke-width="2"/>
+  <path d="M338 256c0-12 24-12 24 0" stroke="#183B35" stroke-width="3" fill="none"/>
+  <!-- plant -->
+  <path d="M410 290l-6-34h40l-6 34z" fill="#B94A45"/>
+  <path d="M424 256c-18-8-22-30-14-42 12 6 18 24 14 42zM424 256c14-10 30-12 38-24-14-4-34 8-38 24zM424 256c-2-18 6-38 20-44 4 16-4 36-20 44z" fill="#237A50"/>
+</svg>

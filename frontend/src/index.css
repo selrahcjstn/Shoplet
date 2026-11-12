@@ -1,1 +1,106 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/* Shoplet design tokens. Source of truth: docs/DESIGN.md */
+@theme {
+  /* Brand */
+  --color-primary: #176b5b;
+  --color-primary-hover: #14594d;
+  --color-primary-dark: #124f45;
+  --color-primary-light: #e8f2ec;
+  --color-brand-ink: #183b35;
+
+  /* Neutrals */
+  --color-background: #f7f7f2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f3ee;
+  --color-border: #e5e9e3;
+  --color-border-strong: #d5ddd5;
+  --color-content: #24332e;
+  --color-content-secondary: #66736d;
+  --color-content-muted: #929d96;
+  --color-content-inverse: #ffffff;
+
+  /* Accent (use sparingly) */
+  --color-accent: #e9a23b;
+  --color-accent-light: #fff2d9;
+
+  /* Semantic */
+  --color-success: #237a50;
+  --color-success-bg: #e8f4ec;
+  --color-warning: #956014;
+  --color-warning-bg: #fff2d9;
+  --color-error: #b94a45;
+  --color-error-bg: #fce8e7;
+  --color-info: #356a9a;
+  --color-info-bg: #eaf2fa;
+
+  /* Typography */
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --text-display: 48px;
+  --text-display--line-height: 56px;
+  --text-h1: 36px;
+  --text-h1--line-height: 44px;
+  --text-h2: 30px;
+  --text-h2--line-height: 38px;
+  --text-h3: 24px;
+  --text-h3--line-height: 32px;
+  --text-h4: 20px;
+  --text-h4--line-height: 28px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /* Elevation (sparingly) */
+  --shadow-sm: 0 1px 2px rgba(24, 59, 53, 0.05);
+  --shadow-md: 0 4px 12px rgba(24, 59, 53, 0.08);
+  --shadow-lg: 0 12px 32px rgba(24, 59, 53, 0.12);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-content);
+    font-family: var(--font-sans);
+  }
+
+  /* Visible keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* One entrance moment: the storefront preview cards rise in on page load. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 450ms ease-out both;
+  animation-delay: var(--delay, 0ms);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

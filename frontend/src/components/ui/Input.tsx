@@ -1,17 +1,18 @@
 import type { InputHTMLAttributes } from 'react'
+import { cn } from '../../lib/cn'
+import Field from './Field'
+import { controlClasses } from './field-styles'
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
+  error?: string
+  hint?: string
 }
 
-export default function Input({ label, className = '', ...props }: Props) {
+export default function Input({ label, error, hint, className, ...props }: InputProps) {
   return (
-    <label className="block text-sm font-medium text-gray-700">
-      {label}
-      <input
-        className={`mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none ${className}`}
-        {...props}
-      />
-    </label>
+    <Field label={label} error={error} hint={hint}>
+      {(control) => <input {...control} className={cn(controlClasses(Boolean(error)), 'h-11', className)} {...props} />}
+    </Field>
   )
 }
