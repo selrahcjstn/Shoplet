@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { randomBytes, scrypt } from 'node:crypto';
 import { promisify } from 'node:util';
 import { db } from '../../prisma/db.js';
@@ -20,7 +24,8 @@ export class UsersService {
       throw new ConflictException('Email already in use');
     }
     const user = await users().create({
-      fullName: dto.fullName,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
       email: dto.email,
       passwordHash: await hashPassword(dto.password),
     });
@@ -47,7 +52,8 @@ export class UsersService {
     await this.findById(id);
     if (dto.email) {
       const taken = await users().where({ email: dto.email }).first();
-      if (taken && taken.id !== id) throw new ConflictException('Email already in use');
+      if (taken && taken.id !== id)
+        throw new ConflictException('Email already in use');
     }
     const user = await users().where({ id }).update(dto);
     if (!user) throw new NotFoundException('User not found');

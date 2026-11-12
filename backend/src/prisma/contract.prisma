@@ -1,22 +1,160 @@
 // use prisma-8
 
-enum UserRole {
-  SELLER
-  ADMIN
-}
-
-enum UserStatus {
-  ACTIVE
-  SUSPENDED
-}
-
 model User {
-  id           String             @id @onCreate(uuid())
-  fullName     String
-  email        String             @unique
-  passwordHash String
-  role         UserRole           @default(SELLER)
-  status       UserStatus         @default(ACTIVE)
-  createdAt    DateTime           @default(now()) @onCreate(now())
-  updatedAt    temporal.UpdatedAt
+  id              Uuid             @id @onCreate(uuid())
+  email           Varchar(255) @unique 
+  passwordHash    Varchar(255) @map("password_hash") 
+  firstName       Varchar(100) @map("first_name") 
+  lastName        Varchar(100) @map("last_name") 
+  isActive        Boolean            @default(true) @map("is_active")
+  emailVerifiedAt DateTime?          @map("email_verified_at")
+  createdAt       DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt       temporal.UpdatedAt @map("updated_at")
+  shop            Shop?
+  adminActions    AdminAction[]      @relation("AdminActionAdmin")
+  targetedActions AdminAction[]      @relation("AdminActionTarget")
+
+  @@map("users")
+}
+
+model BusinessCategory {
+  id          Uuid             @id @onCreate(uuid())
+  name        Varchar(100) @unique 
+  slug        Varchar(120) @unique 
+  description String?
+  createdAt   DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt   temporal.UpdatedAt @map("updated_at")
+  shops       Shop[]
+
+  @@map("business_categories")
+}
+
+model Shop {
+  id                 Uuid             @id @onCreate(uuid())
+  owner              User               @relation(fields: [ownerId], references: [id])
+  ownerId            Uuid             @unique @map("owner_id")
+  businessCategory   BusinessCategory?  @relation(fields: [businessCategoryId], references: [id])
+  businessCategoryId Uuid?            @map("business_category_id")
+  name               Varchar(150) 
+  slug               Varchar(180) @unique 
+  description        String?
+  logoUrl            String?            @map("logo_url")
+  coverImageUrl      String?            @map("cover_image_url")
+  accentColor        Varchar(20)? @map("accent_color") 
+  announcement       String?
+  isPublished        Boolean            @default(false) @map("is_published")
+  createdAt          DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt          temporal.UpdatedAt @map("updated_at")
+  contacts           ShopContact[]
+  productCategories  ProductCategory[]
+  products           Product[]
+  storeViews         StoreView[]
+  contactClicks      ContactClick[]
+
+  @@map("shops")
+}
+
+model ShopContact {
+  id           Uuid             @id @onCreate(uuid())
+  shop         Shop               @relation(fields: [shopId], references: [id])
+  shopId       Uuid             @map("shop_id")
+  contactType  Varchar(50) @map("contact_type") 
+  contactValue Varchar(255) @map("contact_value") 
+  createdAt    DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt    temporal.UpdatedAt @map("updated_at")
+
+  @@map("shop_contacts")
+}
+
+model ProductCategory {
+  id          Uuid             @id @onCreate(uuid())
+  shop        Shop               @relation(fields: [shopId], references: [id])
+  shopId      Uuid             @map("shop_id")
+  name        Varchar(100) 
+  slug        Varchar(120) 
+  description String?
+  createdAt   DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt   temporal.UpdatedAt @map("updated_at")
+  products    Product[]
+
+  @@unique([shopId, slug])
+  @@map("product_categories")
+}
+
+model Product {
+  id            Uuid             @id @onCreate(uuid())
+  shop          Shop               @relation(fields: [shopId], references: [id])
+  shopId        Uuid             @map("shop_id")
+  category      ProductCategory?   @relation(fields: [categoryId], references: [id])
+  categoryId    Uuid?            @map("category_id")
+  name          Varchar(180) 
+  slug          Varchar(200) 
+  description   String?
+  price         NumericString(12, 2)
+  availability  Varchar(30) 
+  isVisible     Boolean            @default(true) @map("is_visible")
+  isFeatured    Boolean            @default(false) @map("is_featured")
+  createdAt     DateTime           @default(now()) @onCreate(now()) @map("created_at")
+  updatedAt     temporal.UpdatedAt @map("updated_at")
+  images        ProductImage[]
+  views         ProductView[]
+  contactClicks ContactClick[]
+
+  @@unique([shopId, slug])
+  @@map("products")
+}
+
+model ProductImage {
+  id           Uuid   @id @onCreate(uuid())
+  product      Product  @relation(fields: [productId], references: [id])
+  productId    Uuid   @map("product_id")
+  imageUrl     String   @map("image_url")
+  altText      Varchar(255)? @map("alt_text") 
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @onCreate(now()) @map("created_at")
+
+  @@map("product_images")
+}
+
+model StoreView {
+  id       Uuid   @id @onCreate(uuid())
+  shop     Shop     @relation(fields: [shopId], references: [id])
+  shopId   Uuid   @map("shop_id")
+  viewedAt DateTime @default(now()) @onCreate(now()) @map("viewed_at")
+
+  @@map("store_views")
+}
+
+model ProductView {
+  id        Uuid   @id @onCreate(uuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Uuid   @map("product_id")
+  viewedAt  DateTime @default(now()) @onCreate(now()) @map("viewed_at")
+
+  @@map("product_views")
+}
+
+model ContactClick {
+  id          Uuid   @id @onCreate(uuid())
+  shop        Shop     @relation(fields: [shopId], references: [id])
+  shopId      Uuid   @map("shop_id")
+  product     Product? @relation(fields: [productId], references: [id])
+  productId   Uuid?  @map("product_id")
+  contactType Varchar(50) @map("contact_type") 
+  clickedAt   DateTime @default(now()) @onCreate(now()) @map("clicked_at")
+
+  @@map("contact_clicks")
+}
+
+model AdminAction {
+  id           Uuid   @id @onCreate(uuid())
+  admin        User     @relation("AdminActionAdmin", fields: [adminId], references: [id])
+  adminId      Uuid   @map("admin_id")
+  targetUser   User?    @relation("AdminActionTarget", fields: [targetUserId], references: [id])
+  targetUserId Uuid?  @map("target_user_id")
+  action       Varchar(100) 
+  reason       String?
+  createdAt    DateTime @default(now()) @onCreate(now()) @map("created_at")
+
+  @@map("admin_actions")
 }

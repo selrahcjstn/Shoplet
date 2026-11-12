@@ -1,0 +1,16 @@
+import { Injectable } from '@nestjs/common';
+import { db } from '../../prisma/db.js';
+import { CreateContactClickDto, ContactClickResponseDto } from './dto/index.js';
+
+const rows = () => db.orm.public.ContactClick;
+
+@Injectable()
+export class ContactClickService {
+  create(dto: CreateContactClickDto): Promise<ContactClickResponseDto> {
+    return rows().create(dto);
+  }
+
+  async findAll(): Promise<ContactClickResponseDto[]> {
+    return await rows().all();
+  }
+}

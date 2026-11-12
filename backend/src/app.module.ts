@@ -3,6 +3,16 @@ import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { BusinessCategoryModule } from './modules/business-categories/business-categories.module.js';
+import { ShopModule } from './modules/shops/shops.module.js';
+import { ShopContactModule } from './modules/shop-contacts/shop-contacts.module.js';
+import { ProductCategoryModule } from './modules/product-categories/product-categories.module.js';
+import { ProductModule } from './modules/products/products.module.js';
+import { ProductImageModule } from './modules/product-images/product-images.module.js';
+import { StoreViewModule } from './modules/store-views/store-views.module.js';
+import { ProductViewModule } from './modules/product-views/product-views.module.js';
+import { ContactClickModule } from './modules/contact-clicks/contact-clicks.module.js';
+import { AdminActionModule } from './modules/admin-actions/admin-actions.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -17,6 +27,16 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'backend',
     }),
     UsersModule,
+    BusinessCategoryModule,
+    ShopModule,
+    ShopContactModule,
+    ProductCategoryModule,
+    ProductModule,
+    ProductImageModule,
+    StoreViewModule,
+    ProductViewModule,
+    ContactClickModule,
+    AdminActionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
