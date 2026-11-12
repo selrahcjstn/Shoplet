@@ -12,13 +12,18 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Public } from '../auth/decorators/public.decorator.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
 import {
   CreateBusinessCategoryDto,
   UpdateBusinessCategoryDto,
@@ -32,6 +37,10 @@ export class BusinessCategoryController {
   constructor(private readonly service: BusinessCategoryService) {}
 
   @Post()
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'Create BusinessCategory' })
   @ApiCreatedResponse({ type: BusinessCategoryResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
@@ -42,6 +51,7 @@ export class BusinessCategoryController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'List BusinessCategory records' })
   @ApiOkResponse({ type: BusinessCategoryResponseDto, isArray: true })
   findAll(): Promise<BusinessCategoryResponseDto[]> {
@@ -49,6 +59,7 @@ export class BusinessCategoryController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({ summary: 'Get BusinessCategory by id' })
   @ApiOkResponse({ type: BusinessCategoryResponseDto })
   @ApiNotFoundResponse({ description: 'BusinessCategory not found' })
@@ -59,6 +70,10 @@ export class BusinessCategoryController {
   }
 
   @Patch(':id')
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'Update BusinessCategory' })
   @ApiOkResponse({ type: BusinessCategoryResponseDto })
   @ApiNotFoundResponse({ description: 'BusinessCategory not found' })
@@ -70,6 +85,10 @@ export class BusinessCategoryController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete BusinessCategory' })
   @ApiNoContentResponse()

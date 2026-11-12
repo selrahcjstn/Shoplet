@@ -7,7 +7,7 @@ const rows = () => db.orm.public.ProductView;
 
 @Injectable()
 export class ProductViewService {
-  create(dto: CreateProductViewDto): Promise<ProductViewResponseDto> {
+  async create(dto: CreateProductViewDto): Promise<ProductViewResponseDto> {
     return rows().create(dto);
   }
 

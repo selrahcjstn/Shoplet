@@ -1,4 +1,5 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
@@ -10,6 +11,8 @@ import { UsersService } from '../users/users.service.js';
 import { UserResponseDto } from '../users/dto/index.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { JwtAuthGuard } from './guards/jwt.auth.guard.js';
+import { RolesGuard } from './guards/roles.guard.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 const SECRET = 'http-test-secret-http-test-secret-12345';
@@ -113,6 +116,8 @@ describe('Auth + protected routes (HTTP)', () => {
         AuthService,
         JwtStrategy,
         { provide: UsersService, useValue: users },
+        { provide: APP_GUARD, useClass: JwtAuthGuard },
+        { provide: APP_GUARD, useClass: RolesGuard },
       ],
     }).compile();
 
@@ -335,6 +340,64 @@ describe('Auth + protected routes (HTTP)', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(401);
       users.rows[0]!.isActive = true;
+    });
+  });
+  describe('role-based access', () => {
+    const server = () => app.getHttpServer();
+    const adminId = crypto.randomUUID();
+
+    beforeAll(() => {
+      users.rows.push({
+        id: adminId,
+        email: 'admin@example.com',
+        passwordHash: 'x',
+        firstName: 'Ad',
+        lastName: 'Min',
+        role: 'ADMIN',
+        isActive: true,
+        emailVerifiedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    });
+
+    it('keeps register and login public', async () => {
+      await request(server()).post('/auth/login').send({}).expect(400);
+    });
+
+    it('rejects admin-only user routes without a token (401)', async () => {
+      await request(server()).get('/users').expect(401);
+      await request(server()).post('/users').send(creds).expect(401);
+      await request(server()).get(`/users/${adminId}`).expect(401);
+    });
+
+    it('rejects admin-only user routes for a seller (403)', async () => {
+      const token = await loginToken();
+      await request(server())
+        .get('/users')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403);
+      await request(server())
+        .get(`/users/${adminId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403);
+    });
+
+    it('allows an admin on admin-only user routes', async () => {
+      const token = jwt.sign({ sub: adminId, role: 'ADMIN' });
+      await request(server())
+        .get(`/users/${adminId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+    });
+
+    it('uses the role stored in the database, not the one in the token', async () => {
+      const sellerId = users.rows[0]!.id;
+      const forgedAdminClaim = jwt.sign({ sub: sellerId, role: 'ADMIN' });
+      await request(server())
+        .get('/users')
+        .set('Authorization', `Bearer ${forgedAdminClaim}`)
+        .expect(403);
     });
   });
 });

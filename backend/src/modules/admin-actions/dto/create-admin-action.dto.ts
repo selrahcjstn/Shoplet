@@ -9,13 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateAdminActionDto {
-  @IsUUID('all', { message: 'Admin ID must be a valid ID' })
-  @ApiProperty({
-    format: 'uuid',
-    example: '3f2b8c0e-6d1a-4c52-9a7e-1b2c3d4e5f60',
-  })
-  adminId!: string;
-
   @IsOptional()
   @IsUUID('all', { message: 'Target user ID must be a valid ID' })
   @ApiPropertyOptional({

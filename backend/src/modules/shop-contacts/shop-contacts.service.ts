@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { definedOnly } from '../../common/utils/defined-only.js';
+import { assertShopAccess } from '../../common/utils/ownership.js';
 import { db } from '../../prisma/db.js';
+import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
 import {
   CreateShopContactDto,
   UpdateShopContactDto,
@@ -11,7 +13,11 @@ const rows = () => db.orm.public.ShopContact;
 
 @Injectable()
 export class ShopContactService {
-  create(dto: CreateShopContactDto): Promise<ShopContactResponseDto> {
+  async create(
+    dto: CreateShopContactDto,
+    user: AuthenticatedUser,
+  ): Promise<ShopContactResponseDto> {
+    await assertShopAccess(dto.shopId, user);
     return rows().create(dto);
   }
 
@@ -28,15 +34,18 @@ export class ShopContactService {
   async update(
     id: string,
     dto: UpdateShopContactDto,
+    user: AuthenticatedUser,
   ): Promise<ShopContactResponseDto> {
-    await this.findById(id);
+    const current = await this.findById(id);
+    await assertShopAccess(current.shopId, user);
     const row = await rows().where({ id }).update(definedOnly(dto));
     if (!row) throw new NotFoundException('ShopContact not found');
     return row;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.findById(id);
+  async remove(id: string, user: AuthenticatedUser): Promise<void> {
+    const current = await this.findById(id);
+    await assertShopAccess(current.shopId, user);
     await rows().where({ id }).delete();
   }
 }

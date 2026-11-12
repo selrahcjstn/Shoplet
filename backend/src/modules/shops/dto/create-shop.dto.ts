@@ -12,13 +12,6 @@ import {
 } from 'class-validator';
 
 export class CreateShopDto {
-  @IsUUID('all', { message: 'Owner ID must be a valid ID' })
-  @ApiProperty({
-    format: 'uuid',
-    example: '3f2b8c0e-6d1a-4c52-9a7e-1b2c3d4e5f60',
-  })
-  ownerId!: string;
-
   @IsOptional()
   @IsUUID('all', { message: 'Business category ID must be a valid ID' })
   @ApiPropertyOptional({

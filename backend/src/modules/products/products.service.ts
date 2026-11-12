@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { definedOnly } from '../../common/utils/defined-only.js';
+import {
+  assertCategoryInShop,
+  assertShopAccess,
+} from '../../common/utils/ownership.js';
 import { db } from '../../prisma/db.js';
+import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -11,7 +16,12 @@ const rows = () => db.orm.public.Product;
 
 @Injectable()
 export class ProductService {
-  create(dto: CreateProductDto): Promise<ProductResponseDto> {
+  async create(
+    dto: CreateProductDto,
+    user: AuthenticatedUser,
+  ): Promise<ProductResponseDto> {
+    await assertShopAccess(dto.shopId, user);
+    if (dto.categoryId) await assertCategoryInShop(dto.categoryId, dto.shopId);
     return rows().create(dto);
   }
 
@@ -25,15 +35,23 @@ export class ProductService {
     return row;
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<ProductResponseDto> {
-    await this.findById(id);
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    user: AuthenticatedUser,
+  ): Promise<ProductResponseDto> {
+    const current = await this.findById(id);
+    await assertShopAccess(current.shopId, user);
+    if (dto.categoryId)
+      await assertCategoryInShop(dto.categoryId, current.shopId);
     const row = await rows().where({ id }).update(definedOnly(dto));
     if (!row) throw new NotFoundException('Product not found');
     return row;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.findById(id);
+  async remove(id: string, user: AuthenticatedUser): Promise<void> {
+    const current = await this.findById(id);
+    await assertShopAccess(current.shopId, user);
     await rows().where({ id }).delete();
   }
 }

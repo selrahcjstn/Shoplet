@@ -11,7 +11,9 @@ const rows = () => db.orm.public.BusinessCategory;
 
 @Injectable()
 export class BusinessCategoryService {
-  create(dto: CreateBusinessCategoryDto): Promise<BusinessCategoryResponseDto> {
+  async create(
+    dto: CreateBusinessCategoryDto,
+  ): Promise<BusinessCategoryResponseDto> {
     return rows().create(dto);
   }
 

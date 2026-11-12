@@ -7,7 +7,7 @@ const rows = () => db.orm.public.ContactClick;
 
 @Injectable()
 export class ContactClickService {
-  create(dto: CreateContactClickDto): Promise<ContactClickResponseDto> {
+  async create(dto: CreateContactClickDto): Promise<ContactClickResponseDto> {
     return rows().create(dto);
   }
 

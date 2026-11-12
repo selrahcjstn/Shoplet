@@ -6,12 +6,12 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiForbiddenResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/index.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
 import { UsersService } from './users.service.js';
 
@@ -31,6 +31,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'Create a user' })
   @ApiCreatedResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })
@@ -40,6 +44,10 @@ export class UsersController {
   }
 
   @Get()
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({ type: UserResponseDto, isArray: true })
   findAll(): Promise<UserResponseDto[]> {
@@ -47,7 +55,6 @@ export class UsersController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get the authenticated user profile' })
   @ApiOkResponse({ type: UserResponseDto })
@@ -57,7 +64,6 @@ export class UsersController {
   }
 
   @Patch('me')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update the authenticated user profile' })
   @ApiOkResponse({ type: UserResponseDto })
@@ -72,6 +78,10 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiNotFoundResponse({ description: 'User not found' })
@@ -80,6 +90,10 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Admin access required' })
   @ApiOperation({ summary: 'Update a user' })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiNotFoundResponse({ description: 'User not found' })
