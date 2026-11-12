@@ -1,4 +1,4 @@
-import { Package } from 'lucide-react'
+import { Package, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/ui/Badge'
 import { buttonStyles } from '../../../components/ui/button-styles'
@@ -28,7 +28,7 @@ export default function RecentProducts({ products }: { products: Product[] }) {
   const recent = [...products].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, MAX_ROWS)
 
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-surface">
+    <section className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface">
       <header className="flex items-center justify-between gap-3 px-6 py-5">
         <div>
           <h2 className="text-h4 font-semibold tracking-tight text-brand-ink">Recent products</h2>
@@ -63,6 +63,14 @@ export default function RecentProducts({ products }: { products: Product[] }) {
           </li>
         ))}
       </ul>
+      {/* Grows to fill the card so it matches the height of the column beside it */}
+      <Link
+        to="/dashboard/products"
+        className="flex min-h-16 flex-1 items-center justify-center gap-2 border-t border-border text-sm font-medium text-content-secondary transition-colors duration-150 hover:bg-surface-muted/60 hover:text-content"
+      >
+        <Plus aria-hidden className="size-4" />
+        Add a product
+      </Link>
     </section>
   )
 }

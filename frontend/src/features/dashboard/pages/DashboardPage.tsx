@@ -150,7 +150,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid items-start gap-6 lg:grid-cols-3 lg:gap-8">
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
         <div className="lg:col-span-2">
           <RecentProducts products={products} />
         </div>

@@ -1,10 +1,10 @@
-import { BarChart3, Tags } from 'lucide-react'
 import { Route, Routes } from 'react-router-dom'
+import AnalyticsPage from '../features/analytics/pages/AnalyticsPage'
 import ProtectedRoute from '../features/auth/components/ProtectedRoute'
 import LoginPage from '../features/auth/pages/LoginPage'
 import RegisterPage from '../features/auth/pages/RegisterPage'
+import CategoriesPage from '../features/categories/pages/CategoriesPage'
 import DashboardPage from '../features/dashboard/pages/DashboardPage'
-import SectionPage from '../features/dashboard/pages/SectionPage'
 import LandingPage from '../features/landing/pages/LandingPage'
 import ProductsPage from '../features/products/pages/ProductsPage'
 import MyShopPage from '../features/shops/pages/MyShopPage'
@@ -34,22 +34,8 @@ export default function AppRoutes() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/shop" element={<MyShopPage />} />
           <Route path="/dashboard/products" element={<ProductsPage />} />
-          <Route
-            path="/dashboard/categories"
-            element={
-              <SectionPage
-                title="Categories"
-                description="Group your products so customers find them faster."
-                Icon={Tags}
-              />
-            }
-          />
-          <Route
-            path="/dashboard/analytics"
-            element={
-              <SectionPage title="Analytics" description="See how many people visit your shop." Icon={BarChart3} />
-            }
-          />
+          <Route path="/dashboard/categories" element={<CategoriesPage />} />
+          <Route path="/dashboard/analytics" element={<AnalyticsPage />} />
         </Route>
       </Route>
     </Routes>
