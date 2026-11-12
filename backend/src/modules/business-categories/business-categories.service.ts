@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { definedOnly } from '../../common/utils/defined-only.js';
 import { db } from '../../prisma/db.js';
 import {
   CreateBusinessCategoryDto,
@@ -29,7 +30,7 @@ export class BusinessCategoryService {
     dto: UpdateBusinessCategoryDto,
   ): Promise<BusinessCategoryResponseDto> {
     await this.findById(id);
-    const row = await rows().where({ id }).update(dto);
+    const row = await rows().where({ id }).update(definedOnly(dto));
     if (!row) throw new NotFoundException('BusinessCategory not found');
     return row;
   }

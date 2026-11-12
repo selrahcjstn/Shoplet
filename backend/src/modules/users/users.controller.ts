@@ -6,17 +6,23 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/index.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard.js';
+import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
 import { UsersService } from './users.service.js';
 
 @ApiTags('users')
@@ -38,6 +44,31 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto, isArray: true })
   findAll(): Promise<UserResponseDto[]> {
     return this.usersService.findAll();
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the authenticated user profile' })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  getMe(@CurrentUser() user: AuthenticatedUser): Promise<UserResponseDto> {
+    return this.usersService.findById(user.id);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update the authenticated user profile' })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiConflictResponse({ description: 'Email already in use' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  updateMe(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.update(user.id, dto);
   }
 
   @Get(':id')

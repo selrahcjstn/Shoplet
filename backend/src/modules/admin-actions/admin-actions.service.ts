@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { definedOnly } from '../../common/utils/defined-only.js';
 import { db } from '../../prisma/db.js';
 import { CreateAdminActionDto, AdminActionResponseDto } from './dto/index.js';
 

@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export type UserRole = 'SELLER' | 'ADMIN';
+
 /** Public shape of a user. Never includes passwordHash. */
 export class UserResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -13,6 +15,9 @@ export class UserResponseDto {
 
   @ApiProperty()
   lastName!: string;
+
+  @ApiProperty({ enum: ['SELLER', 'ADMIN'] })
+  role!: UserRole;
 
   @ApiProperty()
   isActive!: boolean;
@@ -34,6 +39,7 @@ export class UserResponseDto {
       email,
       firstName,
       lastName,
+      role,
       isActive,
       emailVerifiedAt,
       createdAt,
@@ -44,6 +50,7 @@ export class UserResponseDto {
       email,
       firstName,
       lastName,
+      role,
       isActive,
       emailVerifiedAt,
       createdAt,

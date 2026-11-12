@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { definedOnly } from '../../common/utils/defined-only.js';
 import { db } from '../../prisma/db.js';
 import { CreateProductViewDto, ProductViewResponseDto } from './dto/index.js';
 

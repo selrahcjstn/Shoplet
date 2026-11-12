@@ -3,19 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { randomBytes, scrypt } from 'node:crypto';
-import { promisify } from 'node:util';
+import bcrypt from 'bcrypt';
+import { definedOnly } from '../../common/utils/defined-only.js';
 import { db } from '../../prisma/db.js';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/index.js';
 
-const scryptAsync = promisify(scrypt);
 const users = () => db.orm.public.User;
 
-async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16);
-  const key = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
-}
+const BCRYPT_ROUNDS = 12;
 
 @Injectable()
 export class UsersService {
@@ -27,7 +22,7 @@ export class UsersService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      passwordHash: await hashPassword(dto.password),
+      passwordHash: await bcrypt.hash(dto.password, BCRYPT_ROUNDS),
     });
     return UserResponseDto.from(user);
   }
@@ -43,9 +38,14 @@ export class UsersService {
     return UserResponseDto.from(user);
   }
 
-  /** For AuthModule: includes passwordHash. Do not return from controllers. */
-  findByEmailWithHash(email: string) {
+  /** For AuthModule: includes passwordHash and role. Never return from controllers. */
+  findAuthByEmail(email: string) {
     return users().where({ email: email.trim().toLowerCase() }).first();
+  }
+
+  /** For JwtStrategy: includes role and isActive. Never return from controllers. */
+  findAuthById(id: string) {
+    return users().where({ id }).first();
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
@@ -55,7 +55,7 @@ export class UsersService {
       if (taken && taken.id !== id)
         throw new ConflictException('Email already in use');
     }
-    const user = await users().where({ id }).update(dto);
+    const user = await users().where({ id }).update(definedOnly(dto));
     if (!user) throw new NotFoundException('User not found');
     return UserResponseDto.from(user);
   }

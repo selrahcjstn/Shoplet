@@ -13,6 +13,7 @@ import { StoreViewModule } from './modules/store-views/store-views.module.js';
 import { ProductViewModule } from './modules/product-views/product-views.module.js';
 import { ContactClickModule } from './modules/contact-clicks/contact-clicks.module.js';
 import { AdminActionModule } from './modules/admin-actions/admin-actions.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -37,6 +38,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     ProductViewModule,
     ContactClickModule,
     AdminActionModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

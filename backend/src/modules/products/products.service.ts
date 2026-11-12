@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { definedOnly } from '../../common/utils/defined-only.js';
 import { db } from '../../prisma/db.js';
 import {
   CreateProductDto,
@@ -26,7 +27,7 @@ export class ProductService {
 
   async update(id: string, dto: UpdateProductDto): Promise<ProductResponseDto> {
     await this.findById(id);
-    const row = await rows().where({ id }).update(dto);
+    const row = await rows().where({ id }).update(definedOnly(dto));
     if (!row) throw new NotFoundException('Product not found');
     return row;
   }
