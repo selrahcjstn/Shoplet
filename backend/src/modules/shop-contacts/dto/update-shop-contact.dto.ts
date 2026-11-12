@@ -1,21 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { OmitType, PartialType } from '@nestjs/swagger';
+import { CreateShopContactDto } from './create-shop-contact.dto.js';
 
-export class UpdateShopContactDto {
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(50)
-  @ApiPropertyOptional({ example: 'phone', maxLength: 50 })
-  contactType?: string;
-
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  @ApiPropertyOptional({ example: '+639171234567', maxLength: 255 })
-  contactValue?: string;
-}
+export class UpdateShopContactDto extends PartialType(
+  OmitType(CreateShopContactDto, ['shopId'] as const),
+) {}

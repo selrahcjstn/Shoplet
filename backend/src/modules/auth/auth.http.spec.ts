@@ -93,7 +93,7 @@ describe('Auth + protected routes (HTTP)', () => {
     firstName: 'Juan',
     lastName: 'Dela Cruz',
     email: 'juan@example.com',
-    password: 'correct-password',
+    password: 'Correct-Pass1!',
   };
 
   beforeAll(async () => {
@@ -165,8 +165,38 @@ describe('Auth + protected routes (HTTP)', () => {
         .post('/auth/register')
         .send({ ...creds, email: 'not-an-email', password: 'short' })
         .expect(400);
-      expect(res.body.message.join(' ')).toMatch(/email/);
-      expect(res.body.message.join(' ')).toMatch(/password/);
+      expect(res.body.message.join(' ')).toMatch(/email/i);
+      expect(res.body.message.join(' ')).toMatch(/password/i);
+    });
+
+    it.each([
+      ['Sh0rt!', 'at least 8 characters'],
+      ['alllowercase1!', 'uppercase letter'],
+      ['ALLUPPERCASE1!', 'lowercase letter'],
+      ['NoNumbers!!', 'number'],
+      ['NoSpecial123', 'special character'],
+    ])('rejects password %s with a clear message', async (password, text) => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({ ...creds, email: 'rules@example.com', password })
+        .expect(400);
+      expect(res.body.message).toEqual(
+        expect.arrayContaining([expect.stringContaining(text)]),
+      );
+    });
+
+    it('returns friendly messages for missing fields', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({})
+        .expect(400);
+      expect(res.body.message).toEqual(
+        expect.arrayContaining([
+          'First name is required',
+          'Last name is required',
+          'Please enter a valid email address',
+        ]),
+      );
     });
 
     it('does not let clients set role', async () => {

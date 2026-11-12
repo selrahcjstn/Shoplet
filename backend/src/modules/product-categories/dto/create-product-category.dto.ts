@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 
 export class CreateProductCategoryDto {
-  @IsUUID()
+  @IsUUID('all', { message: 'Shop ID must be a valid ID' })
   @ApiProperty({
     format: 'uuid',
     example: '3f2b8c0e-6d1a-4c52-9a7e-1b2c3d4e5f60',
@@ -18,23 +18,25 @@ export class CreateProductCategoryDto {
   shopId!: string;
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
+  @IsString({ message: 'Name must be text' })
+  @IsNotEmpty({ message: 'Name is required' })
+  @MaxLength(100, { message: 'Name must be at most 100 characters' })
   @ApiProperty({ example: 'Sample', maxLength: 100 })
   name!: string;
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @MaxLength(120)
+  @IsString({ message: 'Slug must be text' })
+  @IsNotEmpty({ message: 'Slug is required' })
+  @MaxLength(120, { message: 'Slug must be at most 120 characters' })
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-    message: 'slug must be lowercase letters, numbers and hyphens',
+    message:
+      'Slug may only contain lowercase letters, numbers and single hyphens (for example: my-shop)',
   })
   @ApiProperty({ example: 'sample-slug', maxLength: 120 })
   slug!: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Description must be text' })
   @ApiPropertyOptional({ example: 'Some text' })
   description?: string;
 }

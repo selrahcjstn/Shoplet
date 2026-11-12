@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 
 export class CreateAdminActionDto {
-  @IsUUID()
+  @IsUUID('all', { message: 'Admin ID must be a valid ID' })
   @ApiProperty({
     format: 'uuid',
     example: '3f2b8c0e-6d1a-4c52-9a7e-1b2c3d4e5f60',
@@ -17,7 +17,7 @@ export class CreateAdminActionDto {
   adminId!: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all', { message: 'Target user ID must be a valid ID' })
   @ApiPropertyOptional({
     format: 'uuid',
     example: '3f2b8c0e-6d1a-4c52-9a7e-1b2c3d4e5f60',
@@ -25,14 +25,14 @@ export class CreateAdminActionDto {
   targetUserId?: string;
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
+  @IsString({ message: 'Action must be text' })
+  @IsNotEmpty({ message: 'Action is required' })
+  @MaxLength(100, { message: 'Action must be at most 100 characters' })
   @ApiProperty({ example: 'SUSPEND_USER', maxLength: 100 })
   action!: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Reason must be text' })
   @ApiPropertyOptional({ example: 'Some text' })
   reason?: string;
 }
