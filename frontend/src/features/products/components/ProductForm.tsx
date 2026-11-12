@@ -7,13 +7,7 @@ import Textarea from '../../../components/ui/Textarea'
 import { ApiError, errorMessages } from '../../../lib/api-client'
 import { isSlug, slugify } from '../../../lib/slug'
 import { splitFieldErrors } from '../../auth/field-errors'
-import {
-  createProduct,
-  createProductImage,
-  deleteProductImage,
-  updateProduct,
-  updateProductImage,
-} from '../api'
+import { createProduct, createProductImage, deleteProductImage, updateProduct, updateProductImage } from '../api'
 import { AVAILABILITY_OPTIONS, normalizeAvailability } from '../availability'
 import type { Product, ProductCategory, ProductImage, ProductInput } from '../types'
 
@@ -38,11 +32,13 @@ interface ProductFormProps {
   /** The product's current main picture, if it has one. */
   image?: ProductImage
   categories: ProductCategory[]
-  onSaved: (product: Product, image: ProductImage | null) => void
+  /** `warning` is set when the product saved but its photo did not. */
+  onSaved: (product: Product, image: ProductImage | null, warning?: string) => void
   onCancel: () => void
 }
 
-const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value)
+// The API also requires a domain with a dot, so localhost links are refused.
+const isHttpUrl = (value: string) => /^https?:\/\/[^\s/]+\.[^\s/]+\S*$/i.test(value)
 const isPrice = (value: string) => /^\d{1,10}(\.\d{1,2})?$/.test(value)
 
 function initialState(product?: Product, image?: ProductImage): FormState {
@@ -113,7 +109,8 @@ export default function ProductForm({ shopId, product, image, categories, onSave
     else if (!isSlug(form.slug)) next.slug = 'Use lowercase letters, numbers and single hyphens, like soy-candle.'
     if (!form.price.trim()) next.price = 'Enter a price.'
     else if (!isPrice(form.price.trim())) next.price = 'Use numbers only, with up to 2 decimals, like 199.00.'
-    if (form.imageUrl && !isHttpUrl(form.imageUrl)) next.imageUrl = 'Enter a full link that starts with http:// or https://.'
+    if (form.imageUrl && !isHttpUrl(form.imageUrl))
+      next.imageUrl = 'Enter a full link that starts with http:// or https://.'
     return next
   }
 
@@ -154,9 +151,19 @@ export default function ProductForm({ shopId, product, image, categories, onSave
 
     setLoading(true)
     try {
-      const saved = product ? await updateProduct(product.id, toInput()) : await createProduct(toInput() as ProductInput)
-      const savedImage = await syncImage(saved.id)
-      onSaved(saved, savedImage)
+      const saved = product
+        ? await updateProduct(product.id, toInput())
+        : await createProduct(toInput() as ProductInput)
+      try {
+        onSaved(saved, await syncImage(saved.id))
+      } catch (err) {
+        const reason = errorMessages(err)[0] ?? ''
+        onSaved(
+          saved,
+          image ?? null,
+          `Your product is saved, but the photo was not. ${reason} Edit the product to try again.`,
+        )
+      }
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setErrors({ slug: 'That link is already used by another product. Try a different one.' })
@@ -183,12 +190,7 @@ export default function ProductForm({ shopId, product, image, categories, onSave
       <Input label="Product name" value={form.name} error={errors.name} onChange={handleNameChange} maxLength={180} />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Price (PHP)"
-          inputMode="decimal"
-          placeholder="199.00"
-          {...bind('price')}
-        />
+        <Input label="Price (PHP)" inputMode="decimal" placeholder="199.00" {...bind('price')} />
         <Select label="Availability" value={form.availability} onChange={(e) => set('availability', e.target.value)}>
           {AVAILABILITY_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -209,7 +211,12 @@ export default function ProductForm({ shopId, product, image, categories, onSave
         </Select>
       )}
 
-      <Textarea label="Description" hint="What it is, what it is made of, its size." rows={3} {...bind('description')} />
+      <Textarea
+        label="Description"
+        hint="What it is, what it is made of, its size."
+        rows={3}
+        {...bind('description')}
+      />
 
       <Input
         label="Photo link"

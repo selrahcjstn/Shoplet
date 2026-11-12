@@ -1,4 +1,4 @@
-import { Eye, EyeOff, ImageOff, Pencil, Star, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Star, Trash2 } from 'lucide-react'
 import { cn } from '../../../lib/cn'
 import { formatPrice } from '../../../lib/format'
 import type { Product } from '../types'
@@ -38,8 +38,14 @@ export default function ProductTile({
             className={cn('size-full object-cover', !product.isVisible && 'opacity-60')}
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-content-muted">
-            <ImageOff aria-hidden className="size-8" />
+          <div
+            aria-hidden
+            className={cn(
+              'flex size-full items-center justify-center bg-primary-light text-6xl font-bold text-primary/40',
+              !product.isVisible && 'opacity-60',
+            )}
+          >
+            {product.name.charAt(0).toUpperCase()}
           </div>
         )}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">

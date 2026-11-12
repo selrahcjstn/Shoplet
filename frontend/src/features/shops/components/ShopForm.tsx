@@ -50,7 +50,8 @@ function FormGroup({
   )
 }
 
-const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value)
+// The API also requires a domain with a dot, so localhost links are refused.
+const isHttpUrl = (value: string) => /^https?:\/\/[^\s/]+\.[^\s/]+\S*$/i.test(value)
 
 function initialState(shop?: Shop): FormState {
   return {

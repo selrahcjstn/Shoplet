@@ -1,4 +1,4 @@
-import { BarChart3, Package, Tags } from 'lucide-react'
+import { BarChart3, Tags } from 'lucide-react'
 import { Route, Routes } from 'react-router-dom'
 import ProtectedRoute from '../features/auth/components/ProtectedRoute'
 import LoginPage from '../features/auth/pages/LoginPage'
@@ -6,6 +6,7 @@ import RegisterPage from '../features/auth/pages/RegisterPage'
 import DashboardPage from '../features/dashboard/pages/DashboardPage'
 import SectionPage from '../features/dashboard/pages/SectionPage'
 import LandingPage from '../features/landing/pages/LandingPage'
+import ProductsPage from '../features/products/pages/ProductsPage'
 import MyShopPage from '../features/shops/pages/MyShopPage'
 import ShopsPage from '../features/shops/pages/ShopsPage'
 import DashboardLayout from '../layouts/DashboardLayout'
@@ -32,12 +33,7 @@ export default function AppRoutes() {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/shop" element={<MyShopPage />} />
-          <Route
-            path="/dashboard/products"
-            element={
-              <SectionPage title="Products" description="Add, edit and organize what you sell." Icon={Package} />
-            }
-          />
+          <Route path="/dashboard/products" element={<ProductsPage />} />
           <Route
             path="/dashboard/categories"
             element={
