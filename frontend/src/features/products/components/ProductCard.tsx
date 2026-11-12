@@ -1,6 +1,7 @@
 import { ImageOff, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/ui/Badge'
+import { formatPrice } from '../../../lib/format'
 import type { Product } from '../types'
 import AvailabilityBadge from './AvailabilityBadge'
 
@@ -14,10 +15,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, imageUrl, categoryName, to, currency = 'PHP' }: ProductCardProps) {
-  const price = new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency,
-  }).format(Number(product.price))
+  const price = formatPrice(product.price, currency)
 
   const content = (
     <>
