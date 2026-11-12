@@ -1,7 +1,6 @@
-import { Eye, EyeOff, Globe } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import { useState } from 'react'
 import Alert from '../../../components/ui/Alert'
-import Badge from '../../../components/ui/Badge'
 import Button from '../../../components/ui/Button'
 import SectionCard from '../../../components/ui/SectionCard'
 import { errorMessages } from '../../../lib/api-client'
@@ -25,21 +24,7 @@ export default function PublishCard({ shop, onChange }: { shop: Shop; onChange: 
   }
 
   return (
-    <SectionCard
-      Icon={Globe}
-      title="Visibility"
-      aside={
-        shop.isPublished ? (
-          <Badge tone="success" icon={<Eye aria-hidden className="size-3.5" />}>
-            Published
-          </Badge>
-        ) : (
-          <Badge tone="warning" icon={<EyeOff aria-hidden className="size-3.5" />}>
-            Draft
-          </Badge>
-        )
-      }
-    >
+    <SectionCard Icon={Globe} title="Visibility">
       <p className="text-sm text-content-secondary">
         {shop.isPublished
           ? 'Customers can open your shop link. Unpublish to hide it while you make changes.'

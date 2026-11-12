@@ -1,4 +1,4 @@
-import { Phone, Trash2 } from 'lucide-react'
+import { AtSign, Mail, MessageCircle, MessageSquare, Phone, Trash2, Users, type LucideIcon } from 'lucide-react'
 import { useState, type SyntheticEvent } from 'react'
 import Alert from '../../../components/ui/Alert'
 import Button from '../../../components/ui/Button'
@@ -19,6 +19,20 @@ const CONTACT_TYPES = [
 ]
 
 const labelFor = (type: string) => CONTACT_TYPES.find((t) => t.value === type)?.label ?? type
+
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  phone: Phone,
+  whatsapp: MessageCircle,
+  messenger: MessageSquare,
+  instagram: AtSign,
+  facebook: Users,
+  email: Mail,
+}
+
+function ContactIcon({ type }: { type: string }) {
+  const Icon = TYPE_ICONS[type] ?? Phone
+  return <Icon className="size-4" />
+}
 
 interface ContactsCardProps {
   shopId: string
@@ -77,9 +91,17 @@ export default function ContactsCard({ shopId, contacts, onChange }: ContactsCar
         <ul className="divide-y divide-border">
           {contacts.map((contact) => (
             <li key={contact.id} className="flex items-center justify-between gap-3 py-3">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-content">{labelFor(contact.contactType)}</p>
-                <p className="truncate text-sm text-content-secondary">{contact.contactValue}</p>
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  aria-hidden
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-content-secondary"
+                >
+                  <ContactIcon type={contact.contactType} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-content">{labelFor(contact.contactType)}</p>
+                  <p className="truncate text-sm text-content-secondary">{contact.contactValue}</p>
+                </div>
               </div>
               <Button
                 variant="ghost"

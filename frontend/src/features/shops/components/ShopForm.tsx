@@ -1,5 +1,5 @@
 import { Store } from 'lucide-react'
-import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
+import { useState, type ChangeEvent, type ReactNode, type SyntheticEvent } from 'react'
 import Alert from '../../../components/ui/Alert'
 import Button from '../../../components/ui/Button'
 import Input from '../../../components/ui/Input'
@@ -22,6 +22,32 @@ interface ShopFormProps {
   shop?: Shop
   categories: BusinessCategory[]
   onSaved: (shop: Shop) => void
+}
+
+const ACCENT_PRESETS = ['#176b5b', '#2f6f4f', '#356a9a', '#6d5aa8', '#b94a45', '#956014', '#24332e']
+
+/** A titled block of related fields, so a long form reads as a few short steps. */
+function FormGroup({
+  title,
+  description,
+  stacked,
+  children,
+}: {
+  title: string
+  description: string
+  stacked?: boolean
+  children: ReactNode
+}) {
+  return (
+    <fieldset className={`grid gap-x-8 gap-y-4 ${stacked ? '' : 'lg:grid-cols-[200px_1fr]'}`}>
+      <legend className="sr-only">{title}</legend>
+      <div aria-hidden>
+        <p className="text-sm font-semibold text-brand-ink">{title}</p>
+        <p className="mt-1 text-sm text-content-secondary">{description}</p>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </fieldset>
+  )
 }
 
 const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value)
@@ -141,63 +167,97 @@ export default function ShopForm({ shop, categories, onSaved }: ShopFormProps) {
           : 'Pick a name and a link. You can change everything later.'
       }
     >
-      <form onSubmit={handleSubmit} noValidate className="space-y-4">
-        <Input label="Shop name" value={form.name} error={errors.name} onChange={handleNameChange} maxLength={150} />
+      <form onSubmit={handleSubmit} noValidate className="space-y-8">
+        <FormGroup stacked={!editing} title="The basics" description="Your name and the link people use to find you.">
+          <Input label="Shop name" value={form.name} error={errors.name} onChange={handleNameChange} maxLength={150} />
 
-        <Input
-          label="Shop link"
-          hint={`Customers will find you at shoplet/${form.slug || 'your-shop'}`}
-          {...bind('slug')}
-          onChange={(e) => {
-            setSlugTouched(true)
-            setSaved(false)
-            setForm((current) => ({ ...current, slug: e.target.value.toLowerCase() }))
-          }}
-          maxLength={180}
-        />
-
-        {categories.length > 0 && (
-          <Select label="Category" {...bind('businessCategoryId')}>
-            <option value="">No category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Select>
-        )}
-
-        <Textarea label="Description" hint="A short introduction to your business." {...bind('description')} />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Input label="Logo link" type="url" placeholder="https://" {...bind('logoUrl')} />
-          <Input label="Cover photo link" type="url" placeholder="https://" {...bind('coverImageUrl')} />
-        </div>
-
-        <div className="flex items-end gap-3">
-          <div className="flex-1">
-            <Input label="Accent color" placeholder="#176B5B" hint="Optional. A hex color." {...bind('accentColor')} />
-          </div>
-          <span
-            aria-hidden
-            className="mb-7 size-11 shrink-0 rounded-md border border-border-strong bg-surface-muted"
-            style={/^#[0-9a-fA-F]{6}$/.test(form.accentColor) ? { backgroundColor: form.accentColor } : undefined}
+          <Input
+            label="Shop link"
+            hint={`Customers will find you at shoplet/${form.slug || 'your-shop'}`}
+            {...bind('slug')}
+            onChange={(e) => {
+              setSlugTouched(true)
+              setSaved(false)
+              setForm((current) => ({ ...current, slug: e.target.value.toLowerCase() }))
+            }}
+            maxLength={180}
           />
-        </div>
 
-        <Textarea
-          label="Announcement"
-          hint="Optional. A short notice shown at the top of your page, like a holiday closure."
-          rows={2}
-          {...bind('announcement')}
-        />
+          {categories.length > 0 && (
+            <Select label="Category" {...bind('businessCategoryId')}>
+              <option value="">No category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          )}
+
+          <Textarea label="Description" hint="A short introduction to your business." {...bind('description')} />
+        </FormGroup>
+
+        <FormGroup
+          stacked={!editing}
+          title="Look and feel"
+          description="Images and color that make your page recognizable."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input label="Logo link" type="url" placeholder="https://" {...bind('logoUrl')} />
+            <Input label="Cover photo link" type="url" placeholder="https://" {...bind('coverImageUrl')} />
+          </div>
+
+          <div>
+            <div className="flex items-end gap-3">
+              <div className="flex-1">
+                <Input
+                  label="Accent color"
+                  placeholder="#176B5B"
+                  hint="Optional. A hex color."
+                  {...bind('accentColor')}
+                />
+              </div>
+              <span
+                aria-hidden
+                className="mb-7 size-11 shrink-0 rounded-md border border-border-strong bg-surface-muted"
+                style={/^#[0-9a-fA-F]{6}$/.test(form.accentColor) ? { backgroundColor: form.accentColor } : undefined}
+              />
+            </div>
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Suggested colors">
+              {ACCENT_PRESETS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  aria-label={`Use ${color}`}
+                  aria-pressed={form.accentColor.toLowerCase() === color}
+                  onClick={() => {
+                    setSaved(false)
+                    setForm((current) => ({ ...current, accentColor: color }))
+                  }}
+                  className="size-7 rounded-full border-2 border-surface ring-1 ring-border-strong transition-shadow hover:ring-2 hover:ring-content-muted aria-pressed:ring-2 aria-pressed:ring-brand-ink"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </div>
+        </FormGroup>
+
+        <FormGroup
+          stacked={!editing}
+          title="Announcement"
+          description="A short notice at the top of your page, like a holiday closure."
+        >
+          <Textarea label="Message" hint="Optional." rows={2} {...bind('announcement')} />
+        </FormGroup>
 
         {formError && <Alert tone="error">{formError}</Alert>}
         {saved && <Alert tone="success">{editing ? 'Your changes are saved.' : 'Your shop is created.'}</Alert>}
 
-        <Button type="submit" size="lg" loading={loading}>
-          {loading ? 'Saving' : editing ? 'Save changes' : 'Create shop'}
-        </Button>
+        <div className="border-t border-border pt-6">
+          <Button type="submit" size="lg" loading={loading}>
+            {loading ? 'Saving' : editing ? 'Save changes' : 'Create shop'}
+          </Button>
+        </div>
       </form>
     </SectionCard>
   )

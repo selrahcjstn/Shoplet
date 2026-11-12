@@ -30,7 +30,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }: M
       onClick={(e) => e.target === ref.current && onClose()}
       aria-labelledby="modal-title"
       className={cn(
-        'm-auto max-w-[calc(100vw-2rem)] rounded-xl bg-surface p-6 text-content shadow-lg',
+        'm-auto max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl bg-surface p-6 text-content shadow-lg',
         'backdrop:bg-brand-ink/40',
         widths[size],
       )}

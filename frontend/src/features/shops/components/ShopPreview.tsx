@@ -44,7 +44,7 @@ export default function ShopPreview({ shop, contactCount }: ShopPreviewProps) {
         )}
       </div>
 
-      <div className="px-6 pb-6 sm:px-8">
+      <div className="relative px-6 pb-6 sm:px-8">
         <div className="-mt-10 flex flex-wrap items-end justify-between gap-3 sm:-mt-12">
           {shop.logoUrl ? (
             <img
@@ -110,8 +110,8 @@ export default function ShopPreview({ shop, contactCount }: ShopPreviewProps) {
         )}
 
         {shop.announcement && (
-          <p className="mt-5 flex items-start gap-3 rounded-lg bg-accent/10 px-4 py-3 text-sm text-content">
-            <Megaphone aria-hidden className="mt-0.5 size-4 shrink-0 text-accent-dark" />
+          <p className="mt-5 flex items-start gap-3 rounded-lg bg-warning-bg px-4 py-3 text-sm text-content">
+            <Megaphone aria-hidden className="mt-0.5 size-4 shrink-0 text-warning" />
             {shop.announcement}
           </p>
         )}

@@ -6,6 +6,8 @@ import { errorMessages } from '../../../lib/api-client'
 import { getMe } from '../../auth/api'
 import { getBusinessCategories, getShopContacts, getShops } from '../api'
 import ContactsCard from '../components/ContactsCard'
+import NextSteps from '../components/NextSteps'
+import ProfileChecklist from '../components/ProfileChecklist'
 import PublishCard from '../components/PublishCard'
 import ShopForm from '../components/ShopForm'
 import ShopPreview from '../components/ShopPreview'
@@ -67,7 +69,7 @@ export default function MyShopPage() {
     return (
       <>
         <PageHeader title="Open your shop" description="Choose a name and a link to get started." />
-        <div className="max-w-2xl">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <ShopForm
             categories={categories}
             onSaved={(created) => {
@@ -75,6 +77,7 @@ export default function MyShopPage() {
               update({ shop: created })
             }}
           />
+          <NextSteps />
         </div>
       </>
     )
@@ -88,14 +91,15 @@ export default function MyShopPage() {
           Add your contact details, then publish it when you are ready.
         </Alert>
       )}
-      <div className="grid items-start gap-6 lg:grid-cols-3">
+      <ShopPreview shop={shop} contactCount={contacts.length} />
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {/* key resets the form when a different saved version arrives */}
           <ShopForm key={shop.id} shop={shop} categories={categories} onSaved={(saved) => update({ shop: saved })} />
         </div>
         <div className="space-y-6">
-          <ShopPreview shop={shop} contactCount={contacts.length} />
           <PublishCard shop={shop} onChange={(changed) => update({ shop: changed })} />
+          <ProfileChecklist shop={shop} contactCount={contacts.length} />
           <ContactsCard shopId={shop.id} contacts={contacts} onChange={(next) => update({ contacts: next })} />
         </div>
       </div>
