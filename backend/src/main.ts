@@ -1,19 +1,30 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule, ObserveInstrument } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule, ObserveInstrument } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
   });
-  await app.listen(process.env.PORT ?? 3000);
-
   app.useGlobalPipes(
-  new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-  }),
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Shoplet API')
+    .setDescription('Shoplet mini online storefront platform API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  SwaggerModule.setup('api/docs', app, () => SwaggerModule.createDocument(app, config), {
+    jsonDocumentUrl: 'api/docs-json',
+  });
+
+  await app.listen(process.env.PORT ?? 3000);
 }
 await bootstrap();
