@@ -8,6 +8,7 @@ import DashboardPage from '../features/dashboard/pages/DashboardPage'
 import LandingPage from '../features/landing/pages/LandingPage'
 import ProductsPage from '../features/products/pages/ProductsPage'
 import MyShopPage from '../features/shops/pages/MyShopPage'
+import StorefrontPage from '../features/storefront/pages/StorefrontPage'
 import ShopsPage from '../features/shops/pages/ShopsPage'
 import DashboardLayout from '../layouts/DashboardLayout'
 import MarketingLayout from '../layouts/MarketingLayout'
@@ -23,6 +24,9 @@ export default function AppRoutes() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* The page customers see when a seller shares their link. It has its own header and footer. */}
+      <Route path="/s/:slug" element={<StorefrontPage />} />
 
       <Route element={<PublicLayout />}>
         <Route path="/shops" element={<ShopsPage />} />
