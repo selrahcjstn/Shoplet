@@ -15,6 +15,7 @@ import { ContactClickModule } from './modules/contact-clicks/contact-clicks.modu
 import { AdminActionModule } from './modules/admin-actions/admin-actions.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { StorefrontModule } from './modules/storefront/storefront.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -41,6 +42,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AdminActionModule,
     AuthModule,
     AnalyticsModule,
+    StorefrontModule,
   ],
   controllers: [AppController],
   providers: [AppService],
