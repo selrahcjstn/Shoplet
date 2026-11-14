@@ -1,7 +1,8 @@
-import { Eye, EyeOff } from 'lucide-react'
+import { ExternalLink, Eye, EyeOff } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/ui/Badge'
 import { buttonStyles } from '../../../components/ui/button-styles'
+import { shopPath, shopUrlLabel } from '../../../lib/shop-url'
 import type { Shop } from '../../shops/types'
 
 /** Shop card with a color band: the seller's accent color when set, brand green otherwise. */
@@ -40,17 +41,26 @@ export default function ShopStatus({ shop }: { shop: Shop }) {
         </div>
 
         <h2 className="mt-3 truncate text-h4 font-semibold tracking-tight text-brand-ink">{shop.name}</h2>
-        <p className="truncate text-sm text-content-secondary">
-          shoplet/<span className="font-medium text-content">{shop.slug}</span>
-        </p>
+        <p className="truncate text-sm text-content-secondary">{shopUrlLabel(shop.slug)}</p>
         <p className="mt-3 text-sm text-content-secondary">
           {shop.isPublished
             ? 'Customers can see your shop.'
             : 'Only you can see your shop. Publish it when you are ready.'}
         </p>
-        <Link to="/dashboard/shop" className={buttonStyles({ variant: 'outline', size: 'sm', className: 'mt-4' })}>
-          Manage shop
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a
+            href={shopPath(shop.slug)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonStyles({ size: 'sm' })}
+          >
+            <ExternalLink aria-hidden className="size-4" />
+            {shop.isPublished ? 'View shop' : 'Preview'}
+          </a>
+          <Link to="/dashboard/shop" className={buttonStyles({ variant: 'outline', size: 'sm' })}>
+            Manage shop
+          </Link>
+        </div>
       </div>
     </section>
   )

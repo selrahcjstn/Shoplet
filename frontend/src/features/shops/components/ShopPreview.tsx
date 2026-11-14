@@ -1,6 +1,7 @@
-import { Check, Copy, Eye, EyeOff, Megaphone, Phone } from 'lucide-react'
+import { Check, Copy, ExternalLink, Eye, EyeOff, Megaphone, Phone } from 'lucide-react'
 import { useState } from 'react'
 import Badge from '../../../components/ui/Badge'
+import { shopPath, shopUrl, shopUrlLabel } from '../../../lib/shop-url'
 import type { Shop } from '../types'
 
 interface ShopPreviewProps {
@@ -11,7 +12,7 @@ interface ShopPreviewProps {
 /** The top of the page: how the shop header looks to customers, built from the saved details. */
 export default function ShopPreview({ shop, contactCount }: ShopPreviewProps) {
   const [copied, setCopied] = useState(false)
-  const link = `shoplet/${shop.slug}`
+  const link = shopUrl(shop.slug)
 
   async function copyLink() {
     try {
@@ -60,7 +61,16 @@ export default function ShopPreview({ shop, contactCount }: ShopPreviewProps) {
               {shop.name.charAt(0).toUpperCase()}
             </span>
           )}
-          <div className="pb-1">
+          <div className="flex items-center gap-2 pb-1">
+            <a
+              href={shopPath(shop.slug)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border-strong bg-surface px-3 text-sm font-medium text-content transition-colors hover:bg-surface-muted"
+            >
+              <ExternalLink aria-hidden className="size-3.5" />
+              {shop.isPublished ? 'View shop' : 'Preview'}
+            </a>
             {shop.isPublished ? (
               <Badge tone="success" icon={<Eye aria-hidden className="size-3.5" />}>
                 Published
@@ -77,9 +87,7 @@ export default function ShopPreview({ shop, contactCount }: ShopPreviewProps) {
           <div className="min-w-0">
             <h2 className="truncate text-h3 font-semibold tracking-tight text-brand-ink">{shop.name}</h2>
             <div className="mt-1 flex items-center gap-1">
-              <p className="truncate text-sm text-content-secondary">
-                shoplet/<span className="font-medium text-content">{shop.slug}</span>
-              </p>
+              <p className="truncate text-sm text-content-secondary">{shopUrlLabel(shop.slug)}</p>
               <button
                 type="button"
                 onClick={copyLink}

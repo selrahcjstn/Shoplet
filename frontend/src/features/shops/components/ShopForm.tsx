@@ -7,6 +7,7 @@ import SectionCard from '../../../components/ui/SectionCard'
 import Select from '../../../components/ui/Select'
 import Textarea from '../../../components/ui/Textarea'
 import { ApiError, errorMessages } from '../../../lib/api-client'
+import { shopUrlLabel } from '../../../lib/shop-url'
 import { isSlug, slugify } from '../../../lib/slug'
 import { splitFieldErrors } from '../../auth/field-errors'
 import { createShop, updateShop } from '../api'
@@ -174,7 +175,7 @@ export default function ShopForm({ shop, categories, onSaved }: ShopFormProps) {
 
           <Input
             label="Shop link"
-            hint={`Customers will find you at shoplet/${form.slug || 'your-shop'}`}
+            hint={`Customers will find you at ${shopUrlLabel(form.slug || 'your-shop')}`}
             {...bind('slug')}
             onChange={(e) => {
               setSlugTouched(true)
