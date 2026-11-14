@@ -159,7 +159,11 @@ export default function StorefrontPage() {
             {/* Sticky so customers can switch category without scrolling back up */}
             <div className="sticky top-0 z-20 -mx-4 mt-10 border-b border-border bg-background/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div role="group" aria-label="Categories" className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5">
+                <div
+                  role="group"
+                  aria-label="Categories"
+                  className="-mx-1 flex gap-2 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
                   <CategoryPill
                     active={category === ALL}
                     onClick={() => setCategory(ALL)}
