@@ -2,6 +2,7 @@ import { Store } from 'lucide-react'
 import { useState, type ChangeEvent, type ReactNode, type SyntheticEvent } from 'react'
 import Alert from '../../../components/ui/Alert'
 import Button from '../../../components/ui/Button'
+import ImageUpload from '../../../components/ui/ImageUpload'
 import Input from '../../../components/ui/Input'
 import SectionCard from '../../../components/ui/SectionCard'
 import Select from '../../../components/ui/Select'
@@ -204,10 +205,29 @@ export default function ShopForm({ shop, categories, onSaved }: ShopFormProps) {
           title="Look and feel"
           description="Images and color that make your page recognizable."
         >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input label="Logo link" type="url" placeholder="https://" {...bind('logoUrl')} />
-            <Input label="Cover photo link" type="url" placeholder="https://" {...bind('coverImageUrl')} />
-          </div>
+          <ImageUpload
+            label="Cover photo"
+            purpose="cover"
+            shape="wide"
+            hint="Shown across the top of your page. A wide photo works best."
+            value={form.coverImageUrl}
+            error={errors.coverImageUrl}
+            onChange={(url) => {
+              setSaved(false)
+              setForm((current) => ({ ...current, coverImageUrl: url }))
+            }}
+          />
+          <ImageUpload
+            label="Logo"
+            purpose="logo"
+            hint="A square image, like your profile picture."
+            value={form.logoUrl}
+            error={errors.logoUrl}
+            onChange={(url) => {
+              setSaved(false)
+              setForm((current) => ({ ...current, logoUrl: url }))
+            }}
+          />
 
           <div>
             <div className="flex items-end gap-3">

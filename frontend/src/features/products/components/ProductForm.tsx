@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type SyntheticEvent } from 'react'
 import Alert from '../../../components/ui/Alert'
 import Button from '../../../components/ui/Button'
+import ImageUpload from '../../../components/ui/ImageUpload'
 import Input from '../../../components/ui/Input'
 import Select from '../../../components/ui/Select'
 import Textarea from '../../../components/ui/Textarea'
@@ -218,12 +219,13 @@ export default function ProductForm({ shopId, product, image, categories, onSave
         {...bind('description')}
       />
 
-      <Input
-        label="Photo link"
-        type="url"
-        placeholder="https://"
+      <ImageUpload
+        label="Photo"
+        purpose="product"
         hint="Optional. A square photo works best."
-        {...bind('imageUrl')}
+        value={form.imageUrl}
+        error={errors.imageUrl}
+        onChange={(url) => set('imageUrl', url)}
       />
 
       <Input
