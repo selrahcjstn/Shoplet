@@ -91,7 +91,7 @@ export default function MyShopPage() {
           Add your contact details, then publish it when you are ready.
         </Alert>
       )}
-      <ShopPreview shop={shop} contactCount={contacts.length} />
+      <ShopPreview shop={shop} contactCount={contacts.length} onChange={(saved) => update({ shop: saved })} />
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {/* key resets the form when a different saved version arrives */}

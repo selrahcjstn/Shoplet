@@ -1,4 +1,4 @@
-import { Store } from 'lucide-react'
+import { Camera, Store } from 'lucide-react'
 import { useState, type ChangeEvent, type ReactNode, type SyntheticEvent } from 'react'
 import Alert from '../../../components/ui/Alert'
 import Button from '../../../components/ui/Button'
@@ -115,8 +115,10 @@ export default function ShopForm({ shop, categories, onSaved }: ShopFormProps) {
       slug: form.slug,
       businessCategoryId: form.businessCategoryId || (editing ? null : undefined),
       description: optional(form.description),
-      logoUrl: optional(form.logoUrl),
-      coverImageUrl: optional(form.coverImageUrl),
+      // While editing, the cover and logo are changed on the preview and saved there, so this
+      // form leaves them alone instead of sending back an older value.
+      logoUrl: editing ? undefined : optional(form.logoUrl),
+      coverImageUrl: editing ? undefined : optional(form.coverImageUrl),
       accentColor: optional(form.accentColor),
       announcement: optional(form.announcement),
     }
@@ -205,29 +207,38 @@ export default function ShopForm({ shop, categories, onSaved }: ShopFormProps) {
           title="Look and feel"
           description="Images and color that make your page recognizable."
         >
-          <ImageUpload
-            label="Cover photo"
-            purpose="cover"
-            shape="wide"
-            hint="Shown across the top of your page. A wide photo works best."
-            value={form.coverImageUrl}
-            error={errors.coverImageUrl}
-            onChange={(url) => {
-              setSaved(false)
-              setForm((current) => ({ ...current, coverImageUrl: url }))
-            }}
-          />
-          <ImageUpload
-            label="Logo"
-            purpose="logo"
-            hint="A square image, like your profile picture."
-            value={form.logoUrl}
-            error={errors.logoUrl}
-            onChange={(url) => {
-              setSaved(false)
-              setForm((current) => ({ ...current, logoUrl: url }))
-            }}
-          />
+          {editing ? (
+            <p className="flex items-start gap-2 rounded-lg bg-surface-muted px-4 py-3 text-sm text-content-secondary">
+              <Camera aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+              To change your cover photo or logo, hover over it on the preview at the top of this page.
+            </p>
+          ) : (
+            <>
+              <ImageUpload
+                label="Cover photo"
+                purpose="cover"
+                shape="wide"
+                hint="Shown across the top of your page. A wide photo works best."
+                value={form.coverImageUrl}
+                error={errors.coverImageUrl}
+                onChange={(url) => {
+                  setSaved(false)
+                  setForm((current) => ({ ...current, coverImageUrl: url }))
+                }}
+              />
+              <ImageUpload
+                label="Logo"
+                purpose="logo"
+                hint="A square image, like your profile picture."
+                value={form.logoUrl}
+                error={errors.logoUrl}
+                onChange={(url) => {
+                  setSaved(false)
+                  setForm((current) => ({ ...current, logoUrl: url }))
+                }}
+              />
+            </>
+          )}
 
           <div>
             <div className="flex items-end gap-3">
