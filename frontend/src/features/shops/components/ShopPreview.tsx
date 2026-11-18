@@ -1,5 +1,5 @@
 import { Camera, Check, Copy, ExternalLink, Eye, EyeOff, Megaphone, Phone, Trash2, X } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Badge from '../../../components/ui/Badge'
 import { errorMessages } from '../../../lib/api-client'
 import { cn } from '../../../lib/cn'
@@ -34,6 +34,33 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
   const [error, setError] = useState('')
   const coverInput = useRef<HTMLInputElement>(null)
   const logoInput = useRef<HTMLInputElement>(null)
+  // While the file picker is open the page loses hover and focus, which would hide the controls
+  // the seller just clicked. This keeps them showing until a photo is chosen or the picker closes.
+  const [picking, setPicking] = useState<Photo | null>(null)
+
+  useEffect(() => {
+    if (!picking) return
+    const input = picking === 'cover' ? coverInput.current : logoInput.current
+    const stop = () => setPicking(null)
+    // "cancel" fires when the picker is closed without a file (current browsers). Getting focus back
+    // is the fallback for older ones; a chosen file switches to the upload state anyway.
+    const onFocus = () => window.setTimeout(stop, 400)
+    input?.addEventListener('cancel', stop)
+    window.addEventListener('focus', onFocus)
+    // If no picker appeared at all (some embedded browsers block it), the next click anywhere resets.
+    document.addEventListener('pointerdown', stop)
+    return () => {
+      input?.removeEventListener('cancel', stop)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('pointerdown', stop)
+    }
+  }, [picking])
+
+  function openPicker(photo: Photo) {
+    setError('')
+    setPicking(photo)
+    ;(photo === 'cover' ? coverInput.current : logoInput.current)?.click()
+  }
 
   async function copyLink() {
     try {
@@ -50,6 +77,7 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
   }
 
   async function handleFile(photo: Photo, file: File | undefined) {
+    setPicking(null)
     if (!file) return
     const problem = checkImage(file)
     if (problem) {
@@ -84,6 +112,8 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
 
   const coverBusy = busy?.photo === 'cover'
   const logoBusy = busy?.photo === 'logo'
+  const coverActive = coverBusy || picking === 'cover'
+  const logoActive = logoBusy || picking === 'logo'
 
   return (
     <section aria-label="Shop preview" className="overflow-hidden rounded-lg border border-border bg-surface">
@@ -121,13 +151,13 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
         <div
           className={cn(
             'absolute inset-0 flex items-end justify-end p-3 transition-colors duration-200 sm:p-4',
-            coverBusy ? 'bg-black/50' : 'bg-black/0 group-hover:bg-black/40 group-focus-within:bg-black/40',
+            coverActive ? 'bg-black/50' : 'bg-black/0 group-hover:bg-black/40 group-focus-within:bg-black/40',
           )}
         >
           {coverBusy ? (
             <UploadProgress progress={busy.progress} />
           ) : (
-            <div className={cn('flex gap-2', revealOnHover)}>
+            <div className={cn('flex gap-2', picking === 'cover' ? 'opacity-100' : revealOnHover)}>
               {shop.coverImageUrl && (
                 <button
                   type="button"
@@ -138,7 +168,7 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
                   <Trash2 aria-hidden className="size-4" />
                 </button>
               )}
-              <button type="button" onClick={() => coverInput.current?.click()} className={pillButton}>
+              <button type="button" onClick={() => openPicker('cover')} className={pillButton}>
                 <Camera aria-hidden className="size-4" />
                 {shop.coverImageUrl ? 'Change cover photo' : 'Add cover photo'}
               </button>
@@ -153,7 +183,7 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
           <div className="group relative">
             <button
               type="button"
-              onClick={() => logoInput.current?.click()}
+              onClick={() => openPicker('logo')}
               aria-label={shop.logoUrl ? 'Change logo' : 'Add logo'}
               className="relative block size-20 overflow-hidden rounded-2xl border-4 border-surface bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:size-24"
             >
@@ -171,13 +201,13 @@ export default function ShopPreview({ shop, contactCount, onChange }: ShopPrevie
                 aria-hidden
                 className={cn(
                   'absolute inset-0 flex items-center justify-center text-white transition-colors duration-200',
-                  logoBusy ? 'bg-black/55' : 'bg-black/0 group-hover:bg-black/45 group-focus-within:bg-black/45',
+                  logoActive ? 'bg-black/55' : 'bg-black/0 group-hover:bg-black/45 group-focus-within:bg-black/45',
                 )}
               >
                 {logoBusy ? (
                   <span className="text-xs font-semibold">{busy.progress}%</span>
                 ) : (
-                  <Camera className={cn('size-6', revealOnHover)} />
+                  <Camera className={cn('size-6', picking === 'logo' ? 'opacity-100' : revealOnHover)} />
                 )}
               </span>
             </button>
