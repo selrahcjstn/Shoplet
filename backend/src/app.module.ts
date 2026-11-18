@@ -16,6 +16,7 @@ import { AdminActionModule } from './modules/admin-actions/admin-actions.module.
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { StorefrontModule } from './modules/storefront/storefront.module.js';
+import { UploadsModule } from './modules/uploads/uploads.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -43,6 +44,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthModule,
     AnalyticsModule,
     StorefrontModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
