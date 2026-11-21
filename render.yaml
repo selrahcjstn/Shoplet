@@ -1,0 +1,54 @@
+# Render Blueprint: the API (Docker), the website (static) and a PostgreSQL database.
+# In Render: New > Blueprint > pick this repository. Values marked `sync: false` are asked for
+# when the Blueprint is created; fill them in from the notes beside each one.
+
+databases:
+  - name: shoplet-db
+    databaseName: shoplet_db
+    plan: free
+
+services:
+  - type: web
+    name: shoplet-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    # Public route, so Render can tell the API is up (the root route needs a login).
+    healthCheckPath: /api/docs-json
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shoplet-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      # The website's address, e.g. https://shoplet-web.onrender.com (comma-separate several)
+      - key: CORS_ORIGIN
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  - type: web
+    name: shoplet-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    # Send every path to the React app, so links like /s/your-shop work when opened directly.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # The API's address, e.g. https://shoplet-api.onrender.com (read at build time)
+      - key: VITE_API_URL
+        sync: false
