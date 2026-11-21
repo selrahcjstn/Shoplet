@@ -30,4 +30,12 @@ export class CreateContactClickDto {
   @MaxLength(50, { message: 'Contact type must be at most 50 characters' })
   @ApiProperty({ example: 'phone', maxLength: 50 })
   contactType!: string;
+
+  @IsString({ message: 'Tracking token must be text' })
+  @IsNotEmpty({ message: 'Tracking token is required' })
+  @ApiProperty({
+    description:
+      'The trackingToken from GET /storefront/:slug. Counts without a valid token are refused.',
+  })
+  trackingToken!: string;
 }

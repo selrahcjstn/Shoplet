@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { getPool } from '../../prisma/pool.js';
 import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
+import { TrackingTokenService } from '../tracking/tracking-token.service.js';
 import type {
   StorefrontImageDto,
   StorefrontResponseDto,
@@ -41,6 +42,8 @@ interface ProductRow {
  */
 @Injectable()
 export class StorefrontService {
+  constructor(private readonly tracking: TrackingTokenService) {}
+
   async bySlug(
     slug: string,
     viewer: AuthenticatedUser | null,
@@ -106,6 +109,8 @@ export class StorefrontService {
       },
       isPreview: !shop.is_published,
       isOwner,
+      // Owners get no token: their own visits are never counted.
+      trackingToken: isOwner ? null : await this.tracking.sign(shop.id),
       categories: categories.rows,
       products: products.rows.map((row) => ({
         id: row.id,

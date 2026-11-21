@@ -64,7 +64,8 @@ function mockShop(isPublished: boolean) {
 beforeEach(() => vi.clearAllMocks());
 
 describe('StorefrontService.bySlug', () => {
-  const service = new StorefrontService();
+  const tracking = { sign: vi.fn().mockResolvedValue('signed-token') };
+  const service = new StorefrontService(tracking as never);
 
   it('shows a published shop to anyone', async () => {
     mockShop(true);
@@ -72,6 +73,7 @@ describe('StorefrontService.bySlug', () => {
 
     expect(result.isPreview).toBe(false);
     expect(result.isOwner).toBe(false);
+    expect(result.trackingToken).toBe('signed-token');
     expect(result.shop).toMatchObject({
       name: 'Maple & Co.',
       businessCategory: 'Home goods',
@@ -97,6 +99,8 @@ describe('StorefrontService.bySlug', () => {
     const result = await service.bySlug('maple', owner);
     expect(result.isOwner).toBe(true);
     expect(result.isPreview).toBe(false);
+    // The owner's own visits are never counted, so they get no token.
+    expect(result.trackingToken).toBeNull();
   });
 
   it('returns 404 for a shop that does not exist', async () => {

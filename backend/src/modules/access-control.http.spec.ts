@@ -183,7 +183,7 @@ describe('Access control across controllers (HTTP)', () => {
     it('anyone can record a view, only admins can read them', async () => {
       await request(http())
         .post('/store-views')
-        .send({ shopId: SHOP_ID })
+        .send({ shopId: SHOP_ID, trackingToken: 'token' })
         .expect(201);
       await request(http()).get('/store-views').expect(401);
       await request(http())

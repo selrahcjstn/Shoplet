@@ -58,6 +58,13 @@ export class StorefrontResponseDto {
     description: 'True when the viewer owns the shop or is an admin',
   })
   isOwner!: boolean;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'Send with visit, view and click counts. Valid for 2 hours. Null for the shop owner.',
+  })
+  trackingToken!: string | null;
   @ApiProperty({ type: StorefrontCategoryDto, isArray: true })
   categories!: StorefrontCategoryDto[];
   @ApiProperty({ type: StorefrontProductDto, isArray: true })
