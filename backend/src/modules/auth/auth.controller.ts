@@ -9,6 +9,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserResponseDto } from '../users/dto/index.js';
+import { RateLimit } from '../../config/rate-limit.js';
 import { Public } from './decorators/public.decorator.js';
 import { AuthService } from './auth.service.js';
 import { AuthResponseDto, LoginDto, RegisterDto } from './dto/index.js';
@@ -19,6 +20,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @RateLimit('auth')
   @Post('register')
   @ApiOperation({ summary: 'Register a new account' })
   @ApiCreatedResponse({ type: UserResponseDto })
@@ -29,6 +31,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit('auth')
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log in and receive a JWT access token' })

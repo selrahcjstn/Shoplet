@@ -9,6 +9,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RateLimit } from '../../config/rate-limit.js';
 import { Public } from '../auth/decorators/public.decorator.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { CreateContactClickDto, ContactClickResponseDto } from './dto/index.js';
@@ -21,6 +22,7 @@ export class ContactClickController {
 
   @Post()
   @Public()
+  @RateLimit('tracking')
   @ApiOperation({ summary: 'Create ContactClick' })
   @ApiCreatedResponse({ type: ContactClickResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })

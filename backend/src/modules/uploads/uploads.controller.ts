@@ -7,6 +7,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RateLimit } from '../../config/rate-limit.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/types/jwt-payload.js';
 import {
@@ -22,6 +23,7 @@ export class UploadsController {
   constructor(private readonly service: UploadsService) {}
 
   @Post('signature')
+  @RateLimit('uploads')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a signed request for uploading one photo to Cloudinary',

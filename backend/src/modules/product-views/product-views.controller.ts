@@ -9,6 +9,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RateLimit } from '../../config/rate-limit.js';
 import { Public } from '../auth/decorators/public.decorator.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { CreateProductViewDto, ProductViewResponseDto } from './dto/index.js';
@@ -21,6 +22,7 @@ export class ProductViewController {
 
   @Post()
   @Public()
+  @RateLimit('tracking')
   @ApiOperation({ summary: 'Create ProductView' })
   @ApiCreatedResponse({ type: ProductViewResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed' })

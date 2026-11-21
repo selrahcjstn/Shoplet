@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { RATE_LIMIT_MESSAGE, RATE_LIMITS } from './config/rate-limit.js';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -30,6 +33,11 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       appSecret: process.env.OBSERVE_APP_SECRET ?? 'YOUR_APP_SECRET',
       serviceId: 'backend',
     }),
+    // Per-IP request limits; see config/rate-limit.ts for the numbers.
+    ThrottlerModule.forRoot({
+      throttlers: [{ name: 'default', ...RATE_LIMITS.default }],
+      errorMessage: RATE_LIMIT_MESSAGE,
+    }),
     UsersModule,
     BusinessCategoryModule,
     ShopModule,
@@ -47,6 +55,6 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     UploadsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
