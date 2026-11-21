@@ -47,6 +47,8 @@ export interface Storefront {
   isPreview: boolean
   /** The viewer owns the shop, so their visits are not counted. */
   isOwner: boolean
+  /** Proves counts come from this page. Valid for 2 hours; null for the owner. */
+  trackingToken: string | null
   categories: StoreCategory[]
   products: StoreProduct[]
   contacts: StoreContact[]

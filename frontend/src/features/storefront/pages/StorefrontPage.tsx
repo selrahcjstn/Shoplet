@@ -45,13 +45,14 @@ export default function StorefrontPage() {
       .then((data) => {
         if (cancelled) return
         setState({ status: 'ready', data })
-        // The owner's own visits would only muddy their numbers.
-        if (!data.isOwner) {
-          trackStoreView(data.shop.id)
+        // The owner gets no token: their own visits would only muddy their numbers.
+        const token = data.trackingToken
+        if (token) {
+          trackStoreView(token, data.shop.id)
           const linked = data.products.find(
             (p) => p.slug === new URLSearchParams(window.location.search).get('product'),
           )
-          if (linked) trackProductView(linked.id)
+          if (linked) trackProductView(token, linked.id)
         }
       })
       .catch((error) => {
@@ -101,7 +102,7 @@ export default function StorefrontPage() {
     )
   }
 
-  const { shop, categories, products, isOwner, isPreview } = data
+  const { shop, categories, products, isOwner, isPreview, trackingToken } = data
   const usedCategories = categories
     .map((c) => ({ ...c, count: products.filter((p) => p.categoryId === c.id).length }))
     .filter((c) => c.count > 0)
@@ -112,11 +113,11 @@ export default function StorefrontPage() {
   function openProduct(product: StoreProduct) {
     // In the address, so the back button closes it and the link can be shared.
     setParams({ product: product.slug })
-    if (!isOwner) trackProductView(product.id)
+    if (trackingToken) trackProductView(trackingToken, product.id)
   }
 
   function handleContact(link: ContactLink, product?: StoreProduct) {
-    if (!isOwner) trackContactClick(shop.id, link.type, product?.id)
+    if (trackingToken) trackContactClick(trackingToken, shop.id, link.type, product?.id)
   }
 
   async function share() {

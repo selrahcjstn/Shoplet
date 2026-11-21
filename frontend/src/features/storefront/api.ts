@@ -28,11 +28,12 @@ function oncePerSession(key: string, action: () => void) {
   action()
 }
 
-export const trackStoreView = (shopId: string) =>
-  oncePerSession(`shoplet_sv_${shopId}`, () => track('/store-views', { shopId }))
+// Every count carries the signed token the shop page came with; the API refuses counts without one.
+export const trackStoreView = (token: string, shopId: string) =>
+  oncePerSession(`shoplet_sv_${shopId}`, () => track('/store-views', { shopId, trackingToken: token }))
 
-export const trackProductView = (productId: string) =>
-  oncePerSession(`shoplet_pv_${productId}`, () => track('/product-views', { productId }))
+export const trackProductView = (token: string, productId: string) =>
+  oncePerSession(`shoplet_pv_${productId}`, () => track('/product-views', { productId, trackingToken: token }))
 
-export const trackContactClick = (shopId: string, contactType: string, productId?: string) =>
-  track('/contact-clicks', { shopId, contactType, productId })
+export const trackContactClick = (token: string, shopId: string, contactType: string, productId?: string) =>
+  track('/contact-clicks', { shopId, contactType, productId, trackingToken: token })
